@@ -1,0 +1,180 @@
+project-root/
+│
+├── app/                             # Application core directory
+│   ├── Http/
+│   │   ├── Controllers/             # Controllers
+│   │   │   ├── AuthController.php
+│   │   │   ├── CategoriesController.php
+│   │   │   ├── DashboardController.php
+│   │   │   ├── PopularProductController.php
+│   │   │   ├── ProductController.php
+│   │   │   ├── ProfileController.php
+│   │   │   ├── ReportController.php
+│   │   │   ├── RolesController.php
+│   │   │   ├── TransactionController.php
+│   │   │   └── UsersController.php
+│   │   │
+│   │   ├── Middleware/              # Custom middleware
+│   │   │   └── RoleMiddleware.php   # Role-based access control middleware
+│   │   │
+│   │   └── Requests/                # Form requests validation
+│   │       ├── CategoryRequest.php
+│   │       ├── ProductRequest.php
+│   │       ├── ProfileUpdateRequest.php
+│   │       ├── RoleRequest.php
+│   │       ├── TransactionRequest.php
+│   │       └── UserRequest.php
+│   │
+│   ├── Models/                      # Eloquent models
+│   │   ├── Category.php
+│   │   ├── Product.php
+│   │   ├── Role.php
+│   │   ├── Transaction.php
+│   │   ├── TransactionItem.php
+│   │   └── User.php
+│   │
+│   ├── Services/                    # Business logic services
+│   │   ├── DashboardService.php
+│   │   ├── ProductService.php
+│   │   ├── ReportService.php
+│   │   └── TransactionService.php
+│   │
+│   ├── Exports/                     # Excel exports
+│   │   ├── InventoryExport.php
+│   │   ├── PopularProductsExport.php
+│   │   └── ProductsExport.php
+│   │
+│   ├── Imports/                     # Excel imports
+│   │   └── ProductsImport.php
+│   │
+│   └── Providers/                   # Service providers
+│       ├── AppServiceProvider.php
+│       ├── AuthServiceProvider.php
+│       ├── EventServiceProvider.php
+│       └── RouteServiceProvider.php
+│
+├── bootstrap/                       # Framework bootstrap files
+│
+├── config/                          # Configuration files
+│   ├── app.php
+│   ├── auth.php
+│   ├── roles.php                    # Custom roles configuration
+│   └── ...
+│
+├── database/
+│   ├── factories/                   # Model factories for testing
+│   │   ├── CategoryFactory.php
+│   │   ├── ProductFactory.php
+│   │   ├── RoleFactory.php
+│   │   ├── TransactionFactory.php
+│   │   └── UserFactory.php
+│   │
+│   ├── migrations/                  # Database migrations
+│   │   ├── 2014_10_12_000000_create_users_table.php
+│   │   ├── 2014_10_12_100000_create_password_reset_tokens_table.php
+│   │   ├── 2014_10_12_200000_add_two_factor_columns_to_users_table.php
+│   │   ├── 2023_01_01_000001_create_roles_table.php
+│   │   ├── 2023_01_01_000002_create_user_roles_table.php
+│   │   ├── 2023_01_01_000003_create_categories_table.php
+│   │   ├── 2023_01_01_000004_create_products_table.php
+│   │   ├── 2023_01_01_000005_create_transactions_table.php
+│   │   └── 2023_01_01_000006_create_transaction_items_table.php
+│   │
+│   └── seeders/                     # Database seeders
+│       ├── CategorySeeder.php
+│       ├── DatabaseSeeder.php
+│       ├── ProductSeeder.php
+│       ├── RoleSeeder.php
+│       └── UserSeeder.php
+│
+├── public/                          # Publicly accessible files
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│   └── favicon.ico
+│
+├── resources/
+│   ├── css/                         # CSS assets
+│   │   └── app.css
+│   │
+│   ├── js/                          # JavaScript assets
+│   │   ├── app.js
+│   │   └── pos.js                   # Point of Sale JS functionality
+│   │
+│   └── views/                       # View templates
+│       ├── admin/
+│       │   ├── categories/          # Category management views
+│       │   ├── dashboard.blade.php
+│       │   ├── products/            # Product management views
+│       │   ├── roles/               # Role management views
+│       │   └── users/               # User management views
+│       │
+│       ├── auth/
+│       │   └── login.blade.php
+│       │
+│       ├── components/              # Reusable view components
+│       │   ├── layouts/
+│       │   │   ├── admin.blade.php
+│       │   │   ├── app.blade.php
+│       │   │   ├── kasir.blade.php
+│       │   │   └── pimpinan.blade.php
+│       │   │
+│       │   ├── navigation.blade.php
+│       │   └── sidebar.blade.php
+│       │
+│       ├── kasir/
+│       │   ├── dashboard.blade.php
+│       │   ├── pos/                 # Point of Sale views
+│       │   │   ├── create.blade.php
+│       │   │   ├── index.blade.php
+│       │   │   └── receipt.blade.php
+│       │   │
+│       │   ├── stock-products/      # Stock product views
+│       │   └── today-transactions/  # Today's transactions views
+│       │
+│       ├── pimpinan/
+│       │   ├── dashboard.blade.php
+│       │   ├── inventory/           # Inventory report views
+│       │   └── reports/             # Various report views
+│       │       ├── daily.blade.php
+│       │       ├── weekly.blade.php
+│       │       ├── monthly.blade.php
+│       │       └── yearly.blade.php
+│       │
+│       ├── profile/
+│       │   └── edit.blade.php
+│       │
+│       ├── transactions/            # Transaction views
+│       │   ├── index.blade.php
+│       │   └── show.blade.php
+│       │
+│       └── unauthorized.blade.php   # Access denied page
+│
+├── routes/
+│   ├── api.php                      # API routes
+│   ├── channels.php                 # Broadcast channel routes
+│   ├── console.php                  # Console routes
+│   └── web.php                      # Web routes (your provided file)
+│
+├── storage/                         # Storage directory
+│
+├── tests/                           # Test cases
+│   ├── Feature/
+│   │   ├── Auth/                    # Authentication tests
+│   │   ├── Admin/                   # Admin feature tests
+│   │   ├── Kasir/                   # Cashier feature tests
+│   │   └── Pimpinan/                # Manager feature tests
+│   │
+│   └── Unit/
+│       ├── Models/                  # Model unit tests
+│       └── Services/                # Service unit tests
+│
+├── .env                             # Environment variables
+├── .env.example                     # Example environment file
+├── .gitignore                       # Git ignore file
+├── artisan                          # Laravel command line tool
+├── composer.json                    # Composer dependencies
+├── package.json                     # NPM dependencies
+├── phpunit.xml                      # PHPUnit configuration
+├── README.md                        # Project documentation
+└── vite.config.js                   # Vite configuration
