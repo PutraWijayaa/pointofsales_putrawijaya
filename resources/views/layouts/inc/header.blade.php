@@ -29,8 +29,8 @@
                     <li class="dropdown-header">
                         <h6>{{ Auth::user()->name }}</h6>
                         <span>
-                            @foreach(Auth::user()->roles as $role)
-                            {{ $role->name }}
+                            @foreach (Auth::user()->roles as $role)
+                                {{ $role->name }}
                             @endforeach
                         </span>
                     </li>

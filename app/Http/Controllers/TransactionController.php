@@ -26,18 +26,18 @@ class TransactionController extends Controller
     }
     public function create()
     {
-        $Products = Products::orderBy('id', 'desc')->get()->map(function ($res){
-            return[
+        $Products = Products::orderBy('id', 'desc')->get()->map(function ($res) {
+            return [
                 "id" => $res->id,
                 "name" => $res->product_name,
                 "price" => (int)$res->product_price,
                 "image" => asset('storage/' . $res->product_photo),
                 "option" => null,
             ];
-    });
+        });
 
-    $title = "Create Order"; // Adding a title for the page
-    return view('pos.create', compact('Products', 'title'));
+        $title = "Create Order"; // Adding a title for the page
+        return view('pos.create', compact('Products', 'title'));
     }
 
     public function edit(string $id)
@@ -123,6 +123,7 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
+        // return $request;
         // Begin transaction to ensure data integrity
         DB::beginTransaction();
 
@@ -135,7 +136,7 @@ class TransactionController extends Controller
 
             // Create order record
             $order = new Orders();
-            $order->order_code = 'TWPOS-KS-'.time(); // Same format as in the JS
+            $order->order_code = 'TWPOS-KS-' . time(); // Same format as in the JS
             $order->order_date = now();
             $order->order_amount = $total;
             $order->order_change = $change;
@@ -155,12 +156,12 @@ class TransactionController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Order processed successfully',
-                'order_id' => $order->id
-            ]);
-
+            // return response()->json([
+            //     'status' => 'success',
+            //     'message' => 'Order processed successfully',
+            //     'order_id' => $order->id
+            // ]);
+            return redirect()->to('pos');
         } catch (\Exception $e) {
             DB::rollBack();
 

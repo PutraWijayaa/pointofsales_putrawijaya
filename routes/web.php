@@ -32,7 +32,7 @@ Route::middleware('guest')->group(function () {
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Route untuk halaman tidak diizinkan
-Route::get('/unauthorized', function() {
+Route::get('/unauthorized', function () {
     return view('unauthorized');
 })->name('unauthorized');
 
