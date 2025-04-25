@@ -12,11 +12,27 @@ class Products extends Model
         'product_price',
         'product_photo',
         'product_description',
-        'is_active'
+        'qty_awal',
+        'qty_keluar',
+        'qty_akhir',
+        'is_active',
     ];
 
     public function category()
     {
         return $this->belongsTo(Categories::class, 'category_id', 'id');
+    }
+
+    public function reduceStock($quantity)
+    {
+        // Cek apakah stok cukup
+        if ($this->qty_akhir >= $quantity) {
+            $this->qty_keluar += $quantity;
+            $this->qty_akhir -= $quantity;
+            $this->save();
+            return true;
+        }
+
+        return false; // Stok tidak cukup
     }
 }
