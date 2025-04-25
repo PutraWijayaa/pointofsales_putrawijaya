@@ -9,9 +9,9 @@
     </ol>
 
     <!-- Summary Cards -->
-    <div class="row">
+    <!-- <div class="row"> -->
         <!-- Today's Transactions Card -->
-        <div class="col-xl-4 col-md-6 mb-4">
+        <!-- <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -26,10 +26,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Total Today's Sales Card -->
-        <div class="col-xl-4 col-md-6 mb-4">
+        <!-- <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -44,10 +44,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Products Count Card -->
-        <div class="col-xl-4 col-md-6 mb-4">
+        <!-- <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
@@ -63,7 +63,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Main Action Cards -->
     <div class="row mb-4">
@@ -72,7 +72,7 @@
             <div class="card shadow h-100">
                 <div class="card-body">
                     <div class="text-center">
-                        <a href="{{ route('pos.index') }}" class="btn btn-primary btn-lg p-5 w-100">
+                        <a href="{{ route('pos.create') }}" class="btn btn-primary btn-lg p-5 w-100">
                             <i class="fas fa-cash-register fa-3x mb-3"></i>
                             <h3>Mulai Transaksi Baru</h3>
                             <p class="mt-2">Proses penjualan produk</p>
@@ -98,9 +98,9 @@
         </div>
     </div>
 
-    <div class="row">
+    <!-- <div class="row"> -->
         <!-- Today's Transactions -->
-        <div class="col-12">
+        <!-- <div class="col-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Transaksi Hari Ini</h6>
@@ -152,10 +152,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Popular Products -->
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -189,7 +189,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 @endsection
 
