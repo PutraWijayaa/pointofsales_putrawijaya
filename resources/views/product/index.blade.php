@@ -23,6 +23,7 @@
                                         <th>Category Product</th>
                                         <th>Product</th>
                                         <th>Price</th>
+                                        <th>Stock</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -39,6 +40,7 @@
                                             <td>{{ $data->category->category_name }}</td>
                                             <td>{{ $data->product_name }}</td>
                                             <td>{{ $data->product_price }}</td>
+                                            <td>{{ $data->qty_akhir }}</td>
                                             <td>{{ $data->is_active ? 'Active' : 'Draft' }}</td>
                                             <td class="text-center">
                                                 <a href="{{ route('product.edit', $data->id) }}" class="btn btn-dark"><i

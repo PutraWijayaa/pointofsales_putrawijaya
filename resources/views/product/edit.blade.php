@@ -83,6 +83,25 @@
                                 <textarea class="form-control" placeholder="Address" name="product_description" style="height: 100px;">{{ $edit->product_description }}</textarea>
                             </div>
 
+                            <div class="row">
+                                <div class="mb-3 col-4">
+                                    <label for="" class="col-form-label">Qty Awal</label>
+                                    <input type="number" class="form-control" name="qty_awal"
+                                        value="{{ $edit->qty_awal }}" placeholder="0">
+                                </div>
+                                <div class="mb-3 col-4">
+                                    <label for="" class="col-form-label">Qty Keluar</label>
+                                    <input type="number" class="form-control" name="qty_keluar"
+                                        value="{{ $edit->qty_keluar }}" placeholder="0">
+                                </div>
+
+                                <div class="mb-3 col-4">
+                                    <label for="" class="col-form-label">Qty Akhir</label>
+                                    <input type="number" class="form-control" name="qty_akhir"
+                                        value="{{ $edit->qty_akhir }}" placeholder="0">
+                                </div>
+                            </div>
+
 
                             <div class="mb-3">
                                 <button class="btn btn-dark" type="submit">Save</button>

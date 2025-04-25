@@ -56,6 +56,9 @@ class ProductController extends Controller
             'product_name' => $request->product_name,
             'product_price' => $request->product_price,
             'product_description' => $request->product_description,
+            'qty_awal' => $request->qty_awal,
+            'qty_keluar' => $request->qty_keluar,
+            'qty_akhir' => $request->qty_akhir,
             'is_active' => $request->is_active,
         ];
 
@@ -77,6 +80,9 @@ class ProductController extends Controller
             'product_name' => $request->product_name,
             'product_price' => $request->product_price,
             'product_description' => $request->product_description,
+            'qty_awal' => $request->qty_awal,
+            'qty_keluar' => $request->qty_keluar,
+            'qty_akhir' => $request->qty_akhir,
             'is_active' => $request->is_active,
         ];
 
@@ -116,5 +122,30 @@ class ProductController extends Controller
 
         // alert()->success('Delete Success', 'Successfully')->toToast();
         return redirect()->to('product');
+    }
+
+    public function stockProducts()
+    {
+        return view('stock.index');
+    }
+
+    public function caculate_stok($arr)
+    {
+
+        $results = DB::table('products as a')
+            ->leftJoin(DB::raw('(SELECT SUM(qty) as totalqty, product_id FROM orders_details GROUP BY product_id) b'), 'a.id', '=', 'b.product_id')
+            ->select('a.id', 'a.qty_awal', DB::raw('IFNULL(b.totalqty, 0) as totalqty'))
+            ->whereIn('a.id', $arr)
+            ->get();
+
+        // 2. Update per baris
+        foreach ($results as $row) {
+            DB::table('products')
+                ->where('id', $row->id)
+                ->update([
+                    'qty_keluar' => $row->totalqty,
+                    'qty_akhir'  => $row->qty_awal - $row->totalqty,
+                ]);
+        }
     }
 }

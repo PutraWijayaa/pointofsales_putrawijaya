@@ -11,6 +11,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PopularProductController;
+use App\Models\Products;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +94,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/pimpinan/dashboard', [DashboardController::class, 'pimpinan'])->name('pimpinan.dashboard');
 
         // Laporan
+        Route::get('/stock', [ReportController::class, 'laporan_stokbarang'])->name('stock');
+        Route::post('/stock', [ReportController::class, 'laporan_stokbarang_load'])->name('stock');
+
         Route::get('/reports/daily', [ReportController::class, 'dailyReport'])->name('reports.daily');
 
         Route::get('/daily', [ReportController::class, 'dailyReport'])->name('daily');
@@ -113,8 +117,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/yearly/print', [ReportController::class, 'printYearlyReport'])->name('yearly.print');
 
         // Melihat stok produk
-        Route::get('/inventory', [ProductController::class, 'inventory'])->name('inventory.index');
-        Route::get('/inventory/export', [ProductController::class, 'inventoryExport'])->name('inventory.export');
+        // Route::get('/stock', [ProductController::class, 'stockProducts'])->name('stock.index');
+        // Route::get('/inventory/export', [ProductController::class, 'stockProducts'])->name('inventory.export');
     });
 
     // Route untuk Admin dan Pimpinan (melihat transaksi)
