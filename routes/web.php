@@ -9,9 +9,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\ProfileController;
+// use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PopularProductController;
-use App\Models\Products;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,14 +42,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Route untuk profil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
+    // Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-    // Routes untuk Admin / Super Admin
+    // Routes untuk Admin
     Route::middleware('role:Admin')->group(function () {
         // Dashboard
         Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->name('admin.dashboard');
+
+        Route::get('/popular-products', [App\Http\Controllers\PopularProductController::class, 'index'])->name('popular-products.index');
+        Route::get('/popular-products/report', [App\Http\Controllers\PopularProductController::class, 'report'])->name('popular-products.report');
 
         // Manajemen User
         Route::resource('users', UsersController::class);
@@ -61,8 +63,11 @@ Route::middleware('auth')->group(function () {
 
         // Manajemen Produk
         Route::resource('product', ProductController::class);
-        Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');
-        Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
+
+        Route::post('/stock/add', [ProductController::class, 'addStock'])->name('stock.add');
+
+        // Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');
+        // Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
 
         // Produk Populer
         Route::get('/popular-products', [PopularProductController::class, 'index'])->name('popular-products.index');
@@ -76,9 +81,6 @@ Route::middleware('auth')->group(function () {
 
         // POS - Point of Sale
         Route::resource('pos', TransactionController::class);
-
-        Route::get('/pos/receipt/{transaction}', [TransactionController::class, 'receipt'])->name('pos.receipt');
-        Route::get('/pos/products', [TransactionController::class, 'getProducts'])->name('pos.products');
 
         // Melihat stok produk
         Route::get('/stock-products', [ProductController::class, 'stockProducts'])->name('stock-products.index');
@@ -94,11 +96,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/pimpinan/dashboard', [DashboardController::class, 'pimpinan'])->name('pimpinan.dashboard');
 
         // Laporan
-        Route::get('/stock', [ReportController::class, 'laporan_stokbarang'])->name('stock');
-        Route::post('/stock', [ReportController::class, 'laporan_stokbarang_load'])->name('stock');
+        // Route::get('/stock', [ReportController::class, 'laporan_stokbarang'])->name('stock');
+        // Route::post('/stock', [ReportController::class, 'laporan_stokbarang_load'])->name('stock');
 
+        Route::get('/report', [ReportController::class, 'stockReport'])->name('stock.report');
+        Route::get('/history', [ReportController::class, 'stockHistory'])->name('stock.history');
+        Route::get('/stock-history/print', [ReportController::class, 'printHistory'])->name('stok.cetakHis');
+        Route::get('/stok/cetak', [ReportController::class, 'print'])->name('stok.cetak');
+
+        // Datily Reports
         Route::get('/reports/daily', [ReportController::class, 'dailyReport'])->name('reports.daily');
-
         Route::get('/daily', [ReportController::class, 'dailyReport'])->name('daily');
         Route::get('/daily/print', [ReportController::class, 'printDailyReport'])->name('daily.print');
 
@@ -113,12 +120,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/monthly/print', [ReportController::class, 'printMonthlyReport'])->name('reports.monthly.print');
 
         // Yearly reports
-        Route::get('/yearly', [ReportController::class, 'yearlyReport'])->name('yearly');
-        Route::get('/yearly/print', [ReportController::class, 'printYearlyReport'])->name('yearly.print');
+        // Route::get('/yearly', [ReportController::class, 'yearlyReport'])->name('yearly');
+        // Route::get('/yearly/print', [ReportController::class, 'printYearlyReport'])->name('yearly.print');
 
-        // Melihat stok produk
-        // Route::get('/stock', [ProductController::class, 'stockProducts'])->name('stock.index');
-        // Route::get('/inventory/export', [ProductController::class, 'stockProducts'])->name('inventory.export');
     });
 
     // Route untuk Admin dan Pimpinan (melihat transaksi)

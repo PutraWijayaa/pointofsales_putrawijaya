@@ -11,11 +11,11 @@
         <div class="row">
             <!-- Total Products Card -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card border-left-dark shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
                                     Total Products</div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProducts ?? 0 }}</div>
                             </div>
@@ -87,12 +87,12 @@
             <div class="col-xl-8 col-lg-7">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Recent Transactions</h6>
-                        <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-primary">View All</a>
+                        <h6 class="m-0 font-weight-bold text-dark">Recent Transactions</h6>
+                        <!-- <a href="{{ route('transactions.index') }}" class="btn btn-sm btn-dark">View All</a> -->
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered" width="100%" cellspacing="0">
+                            <table class="table datatable table-hover" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
                                         <th>Order Code</th>
@@ -131,8 +131,8 @@
             <div class="col-xl-4 col-lg-5">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Popular Products</h6>
-                        <!-- <a href="{{ route('popular-products.index') }}" class="btn btn-sm btn-primary">View All</a> -->
+                        <h6 class="m-0 font-weight-bold text-dark">Popular Products</h6>
+                        <a href="{{ route('popular-products.index') }}" class="btn btn-sm btn-dark">View All</a>
                     </div>
                     <div class="card-body">
                         @forelse($popularProducts ?? [] as $product)
@@ -142,7 +142,7 @@
                                     <small
                                         class="text-muted">{{ $product->category->category_name ?? 'No Category' }}</small>
                                 </div>
-                                <span class="badge bg-primary rounded-pill">{{ $product->total_sales ?? 0 }} sold</span>
+                                <span class="badge bg-dark rounded-pill">{{ $product->total_sales ?? 0 }} sold</span>
                             </div>
                         @empty
                             <div class="text-center py-3">
@@ -159,24 +159,24 @@
             <div class="col-12">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Quick Access</h6>
+                        <h6 class="m-0 font-weight-bold text-dark">Quick Access</h6>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-md-4 col-sm-6 mb-4">
-                                <a href="{{ route('users.create') }}" class="btn btn-outline-primary w-100 py-3">
+                                <a href="{{ route('users.create') }}" class="btn btn-outline-dark w-100 py-3">
                                     <i class="fas fa-user-plus fa-2x mb-2"></i><br>
                                     Add User
                                 </a>
                             </div>
                             <div class="col-md-4 col-sm-6 mb-4">
-                                <a href="{{ route('product.create') }}" class="btn btn-outline-primary w-100 py-3">
+                                <a href="{{ route('product.create') }}" class="btn btn-outline-dark w-100 py-3">
                                     <i class="fas fa-box fa-2x mb-2"></i><br>
                                     Add Product
                                 </a>
                             </div>
                             <div class="col-md-4 col-sm-6 mb-4">
-                                <a href="{{ route('categories.create') }}" class="btn btn-outline-primary w-100 py-3">
+                                <a href="{{ route('categories.create') }}" class="btn btn-outline-dark w-100 py-3">
                                     <i class="fas fa-folder-plus fa-2x mb-2"></i><br>
                                     Add Category
                                 </a>

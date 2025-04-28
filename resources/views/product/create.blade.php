@@ -37,25 +37,6 @@
                                 </select>
                             </div>
 
-                            <div class="row">
-                                <div class="mb-3 col-4">
-                                    <label for="" class="col-form-label">Qty Awal</label>
-                                    <input type="number" class="form-control" name="qty_awal" value="0"
-                                        placeholder="0">
-                                </div>
-                                <div class="mb-3 col-4">
-                                    <label for="" class="col-form-label">Qty Keluar</label>
-                                    <input type="number" class="form-control" name="qty_keluar" value="0"
-                                        placeholder="0">
-                                </div>
-
-                                <div class="mb-3 col-4">
-                                    <label for="" class="col-form-label">Qty Akhir</label>
-                                    <input type="number" class="form-control" name="qty_akhir" value="0"
-                                        placeholder="0">
-                                </div>
-                            </div>
-
                             <table class="table table-bordered">
                                 <tr>
                                     <td>
@@ -109,6 +90,13 @@
                                     </div>
                                 </div>
                             </div> --}}
+
+
+                            <div class="mb-3">
+                                <label class="mb-3" for="">Stock <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="stock" id=""
+                                    placeholder="Enter Stock" required>
+                            </div>
 
 
                             <div class="mb-3">

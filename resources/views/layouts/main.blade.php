@@ -7,13 +7,19 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>{{ $title ?? '' }}</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
+     <!-- Title dan Meta Tags -->
+     <title>{{ $title ?? '' }} Point Of Sales</title>
+    <meta name="description" content="{{ $description ?? 'Deskripsi default aplikasi Anda' }}">
+    <meta name="keywords" content="{{ $keywords ?? 'keyword1, keyword2, keyword3' }}">
+    <meta name="author" content="Nama Perusahaan/Developer">
+
+    <!-- <title>{{ $title ?? '' }}</title> -->
+    <!-- <meta content="" name="description"> -->
+    <!-- <meta content="" name="keywords"> -->
 
     <!-- Favicons -->
-    {{-- <link href="{{ asset('assets/img/favicon.png') }}" rel="icon"> --}}
-    {{-- <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon"> --}}
+    <link href="{{ asset('assets/img/logo.png') }}" rel="icon">
+    <link href="{{ asset('assets/img/logo.png') }}" rel="apple-touch-icon">
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -59,10 +65,10 @@
             class="bi bi-arrow-up-short"></i></a>
 
     <!-- Vendor JS Files -->
-    <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+    <!-- <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script> -->
     <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/chart.js/chart.umd.js') }}"></script>
-    <script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
+    <!-- <script src="{{ asset('assets/vendor/chart.js/chart.umd.js') }}"></script> -->
+    <!-- <script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script> -->
     <script src="{{ asset('assets/vendor/quill/quill.js') }}"></script>
     <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
     <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
@@ -86,11 +92,11 @@
         src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.print.min.js"></script>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
 
     <!-- Template Main JS File -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    @include('sweetalert::alert', ['cdn' => 'https://cdn.jsdelivr.net/npm/sweetalert2@9'])
+    <!-- @include('sweetalert::alert', ['cdn' => 'https://cdn.jsdelivr.net/npm/sweetalert2@9']) -->
 
 
     {{-- script sales --}}

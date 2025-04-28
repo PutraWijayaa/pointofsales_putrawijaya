@@ -30,10 +30,6 @@ class DashboardController extends Controller
         return redirect()->route('login');
     }
 
-    /**
-     * Display the Admin dashboard.
-     */
-
      public function admin()
      {
          // Fetching the necessary data for the dashboard
@@ -48,12 +44,12 @@ class DashboardController extends Controller
 
          // Fetching popular products dynamically
          $popularProducts = Products::with('category')
-    ->selectRaw('products.*, IFNULL(SUM(orders.order_amount), 0) as total_sales')
-    ->leftJoin('orders', 'products.id', '=', 'orders.id')
-    ->groupBy('products.id')
-    ->orderByDesc('total_sales')
-    ->take(5)
-    ->get();
+            ->selectRaw('products.*, IFNULL(SUM(orders.order_amount), 0) as total_sales')
+            ->leftJoin('orders', 'products.id', '=', 'orders.id')
+            ->groupBy('products.id')
+            ->orderByDesc('total_sales')
+            ->take(5)
+            ->get();
 
 
          // Fetching low stock products (assuming you have a 'stock' field)
@@ -73,88 +69,18 @@ class DashboardController extends Controller
          ]);
      }
 
-    // public function admin()
-    // {
-    //     // Total products, categories, users
-    //     $totalProducts = Products::count();
-    //     $totalCategories = Categories::count();
-    //     $totalUsers = User::count();
-
-    //     // Most popular products
-    //     $popularProducts = DB::table('order_details')
-    //         ->join('products', 'order_details.product_id', '=', 'products.id')
-    //         ->join('orders', 'order_details.transaction_id', '=', 'orders.id')
-    //         ->where('orders.status', 'Completed')
-    //         ->select('products.product_name', DB::raw('SUM(order_details.quantity) as total_sold'))
-    //         ->groupBy('products.id', 'products.product_name')
-    //         ->orderByDesc('total_sold')
-    //         ->limit(5)
-    //         ->get();
-
-    //     // Recent orders
-    //     $recentorders = Transaction::with('user')
-    //         ->latest()
-    //         ->limit(5)
-    //         ->get();
-
-    //     return view('dashboard.admin', compact(
-    //         'totalProducts',
-    //         'totalCategories',
-    //         'totalUsers',
-    //         'popularProducts',
-    //         'recentorders'
-    //     ));
-    // }
-
-    /**
-     * Display the Kasir dashboard.
-     */
-
      public function kasir()
     {
 
         return view('kasir.dashboard'); // Pastikan view ini ada
     }
 
-    // public function kasir()
-    // {
-    //     // Total orders by current user today
-    //     $todayorders = Transaction::where('user_id', auth()->id())
-    //         ->whereDate('created_at', now()->toDateString())
-    //         ->count();
-
-    //     // Total sales by current user today
-    //     $todaySales = Transaction::where('user_id', auth()->id())
-    //         ->where('status', 'Completed')
-    //         ->whereDate('created_at', now()->toDateString())
-    //         ->sum('final_price');
-
-    //     // Recent orders by current user
-    //     $recentorders = Transaction::where('user_id', auth()->id())
-    //         ->with('details.product')
-    //         ->latest()
-    //         ->limit(5)
-    //         ->get();
-
-
-
-    //     return view('dashboard.kasir', compact(
-    //         'todayorders',
-    //         'todaySales',
-    //         'recentorders',
-    //     ));
-    // }
-
-    /**
-     * Display the Pimpinan dashboard.
-     */
-
      public function pimpinan()
     {
 
         // Fetching the necessary data for the dashboard
-        $totalProducts = Products::count(); // Ensure the model name is correct
-        $totalCategories = Categories::count(); // Ensure the model name is correct
+        $totalProducts = Products::count();
+        $totalCategories = Categories::count();
         $totalUsers = User::count();
         $totalOrders = Orders::count();
 
@@ -164,18 +90,12 @@ class DashboardController extends Controller
 
         // Fetching popular products dynamically
         $popularProducts = Products::with('category')
-   ->selectRaw('products.*, IFNULL(SUM(orders.order_amount), 0) as total_sales')
-   ->leftJoin('orders', 'products.id', '=', 'orders.id')
-   ->groupBy('products.id')
-   ->orderByDesc('total_sales')
-   ->take(5)
-   ->get();
-
-
-        // Fetching low stock products (assuming you have a 'stock' field)
-       //  $lowStockProducts = Products::with('category')
-       //      ->where('stock', '<=', 5)
-       //      ->get();
+            ->selectRaw('products.*, IFNULL(SUM(orders.order_amount), 0) as total_sales')
+            ->leftJoin('orders', 'products.id', '=', 'orders.id')
+            ->groupBy('products.id')
+            ->orderByDesc('total_sales')
+            ->take(5)
+            ->get();
 
         // Passing data to the view
         return view('pimpinan.dashboard', [

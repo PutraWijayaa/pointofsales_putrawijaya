@@ -49,8 +49,8 @@
                           </div>
 
                           <h5 class="card-title">Orders for {{ $selectedDate ?? date('Y-m-d') }}</h5>
-                          <table class="table table-bordered table-striped table-hover">
-                              <thead class="table-dark" align="center">
+                          <table class="table datatable table-hover">
+                              <thead>
                                   <tr>
                                       <th>No</th>
                                       <th>Order Code</th>
@@ -90,37 +90,6 @@
                       </div>
                   </div>
 
-                  <div class="card mt-3">
-                      <div class="card-body">
-                          <h5 class="card-title">Top Selling Products</h5>
-                          <table class="table table-bordered table-striped">
-                              <thead class="table-dark" align="center">
-                                  <tr>
-                                      <th>No</th>
-                                      <th>Product</th>
-                                      <th>Category</th>
-                                      <th>Quantity Sold</th>
-                                      <th>Amount</th>
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                  @forelse ($topProducts as $key => $product)
-                                      <tr>
-                                          <td>{{ $key + 1 }}</td>
-                                          <td>{{ $product->product_name }}</td>
-                                          <td>{{ $product->category_name }}</td>
-                                          <td>{{ $product->total_qty }}</td>
-                                          <td>{{ number_format($product->total_amount) }}</td>
-                                      </tr>
-                                  @empty
-                                      <tr>
-                                          <td colspan="5" class="text-center">No products sold on this date</td>
-                                      </tr>
-                                  @endforelse
-                              </tbody>
-                          </table>
-                      </div>
-                  </div>
               </div>
           </div>
       </section>

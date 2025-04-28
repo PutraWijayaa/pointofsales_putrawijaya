@@ -31,10 +31,10 @@
 </head>
 
 <body>
+    @include('sweetalert::alert')
 
-  <main>
+    <main>
     <div class="container">
-
       <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <div class="container">
           <div class="row justify-content-center">
@@ -85,6 +85,13 @@
                     <div class="col-12">
                       <button class="btn btn-dark w-100" type="submit">Login</button>
                     </div>
+
+                    <!-- Add this button below the login button -->
+                    <div class="col-12">
+                      <a href="{{ asset('assets/ManualBook.pdf') }}" class="w-100 text-dark" target="_blank">
+                        <i class="bi bi-file-earmark-pdf"></i> Manual Book
+                      </a>
+                    </div>
                   </form>
 
                 </div>
@@ -97,10 +104,9 @@
       </section>
 
     </div>
-  </main><!-- End #main -->
+    </main><!-- End #main -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
   <!-- Vendor JS Files -->
   <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
   <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

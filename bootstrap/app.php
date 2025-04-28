@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+            'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

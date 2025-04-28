@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Categories;
 use App\Models\Products;
 use App\Models\Orders;
+use App\Models\StockHistory;
 use App\Models\orderDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -36,7 +37,9 @@ class TransactionController extends Controller
             ];
         });
 
-        $title = "Create Order"; // Adding a title for the page
+        $title = "Create Order";
+
+        // Alert::success('Success Title', 'Success Message');
         return view('pos.create', compact('Products', 'title'));
     }
 
@@ -121,56 +124,184 @@ class TransactionController extends Controller
 
     // }
 
+    // public function store(Request $request)
+    // {
+    //     // return $request;
+    //     // Begin transaction to ensure data integrity
+    //     DB::beginTransaction();
+
+    //     try {
+    //         // Decode cart JSON data
+    //         $cartItems = json_decode($request->cart, true);
+    //         $cash = $request->cash;
+    //         $total = $request->total;
+    //         $change = $request->change;
+
+    //         // Create order record
+    //         $order = new Orders();
+    //         $order->order_code = 'TWPOS-KS-' . time(); // Same format as in the JS
+    //         $order->order_date = now();
+    //         $order->order_amount = $total;
+    //         $order->order_change = $change;
+    //         $order->order_status = 1; // Completed
+    //         $order->save();
+
+    //         // Process each item in the cart
+    //         foreach ($cartItems as $item) {
+    //             $orderDetail = new OrderDetails();
+    //             $orderDetail->order_id = $order->id;
+    //             $orderDetail->product_id = $item['productId'];
+    //             $orderDetail->qty = $item['qty'];
+    //             $orderDetail->order_price = $item['price'];
+    //             $orderDetail->order_subtotal = $item['price'] * $item['qty'];
+    //             $orderDetail->save();
+    //         }
+
+    //         DB::commit();
+
+    //         // return response()->json([
+    //         //     'status' => 'success',
+    //         //     'message' => 'Order processed successfully',
+    //         //     'order_id' => $order->id
+    //         // ]);
+    //         return redirect()->to('pos');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Failed to process order: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'cart' => 'required|json',
+    //         'cash' => 'required|numeric|min:0',
+    //         'total' => 'required|numeric|min:0',
+    //         'change' => 'required|numeric|min:0',
+    //     ]);
+
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $cartItems = json_decode($request->cart, true);
+    //         $cash = $request->cash;
+    //         $total = $request->total;
+    //         $change = $request->change;
+
+    //         // Create order
+    //         $order = new Orders();
+    //         $order->order_code = 'TWPOS-KS-' . time();
+    //         $order->order_date = now();
+    //         $order->order_amount = $total;
+    //         $order->order_change = $change;
+    //         $order->order_status = 1;
+    //         $order->save();
+
+    //         // Process each item
+    //         foreach ($cartItems as $item) {
+    //             $orderDetail = new OrderDetails();
+    //             $orderDetail->order_id = $order->id;
+    //             $orderDetail->product_id = $item['productId'];
+    //             $orderDetail->qty = $item['qty'];
+    //             $orderDetail->order_price = $item['price'];
+    //             $orderDetail->order_subtotal = $item['price'] * $item['qty'];
+    //             $orderDetail->save();
+
+    //             // Update product stock
+    //             $product = Products::find($item['productId']);
+
+    //             if ($product) {
+    //                 if ($product->stock >= $item['qty']) {
+    //                     $product->stock -= $item['qty'];
+    //                     $product->save();
+    //                 } else {
+    //                     // Gagal jika stok kurang dari qty yang diminta
+    //                     throw new \Exception("Stok produk '{$product->product_name}' tidak mencukupi.");
+    //                 }
+    //             } else {
+    //                 throw new \Exception("Produk dengan ID {$item['productId']} tidak ditemukan.");
+    //             }
+    //         }
+
+    //         DB::commit();
+    //         Alert::success('Success', 'Transaction has been successfully processed.');
+    //         return redirect()->with('success', 'Order created successfully');
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return redirect()->back()->with('error', 'Failed to process order: ' . $e->getMessage());
+    //     }
+    // }
+
+
+
     public function store(Request $request)
-    {
-        // return $request;
-        // Begin transaction to ensure data integrity
-        DB::beginTransaction();
+{
+    // Validasi dan ambil data dari request
+    $cartItems = json_decode($request->cart, true);
+    $cash = $request->cash;
+    $total = $request->total;
+    $change = $request->change;
 
-        try {
-            // Decode cart JSON data
-            $cartItems = json_decode($request->cart, true);
-            $cash = $request->cash;
-            $total = $request->total;
-            $change = $request->change;
+    DB::beginTransaction();
 
-            // Create order record
-            $order = new Orders();
-            $order->order_code = 'TWPOS-KS-' . time(); // Same format as in the JS
-            $order->order_date = now();
-            $order->order_amount = $total;
-            $order->order_change = $change;
-            $order->order_status = 1; // Completed
-            $order->save();
+    try {
+        // Simpan data order
+        $order = new Orders();
+        $order->order_code = 'TWPOS-KS-' . time();
+        $order->order_date = now();
+        $order->order_amount = $total;
+        $order->order_change = $change;
+        $order->order_status = 1; // Completed
+        $order->save();
 
-            // Process each item in the cart
-            foreach ($cartItems as $item) {
-                $orderDetail = new OrderDetails();
-                $orderDetail->order_id = $order->id;
-                $orderDetail->product_id = $item['productId'];
-                $orderDetail->qty = $item['qty'];
-                $orderDetail->order_price = $item['price'];
-                $orderDetail->order_subtotal = $item['price'] * $item['qty'];
-                $orderDetail->save();
+        // Proses setiap item dalam cart
+        foreach ($cartItems as $item) {
+            $product = Products::findOrFail($item['productId']);
+
+            // Cek apakah stok cukup
+            if ($product->stock < $item['qty']) {
+                return back()->with('error', 'Stok produk ' . $product->product_name . ' tidak cukup.');
             }
 
-            DB::commit();
+            // Update stok produk
+            $product->stock -= $item['qty'];
+            $product->save();
 
-            // return response()->json([
-            //     'status' => 'success',
-            //     'message' => 'Order processed successfully',
-            //     'order_id' => $order->id
-            // ]);
-            return redirect()->to('pos');
-        } catch (\Exception $e) {
-            DB::rollBack();
+            // Simpan riwayat stok
+            StockHistory::create([
+                'product_id' => $product->id,
+                'stock_change' => -$item['qty'], // Mengurangi stok
+                'transaction_type' => 'sale', // Tipe transaksi: penjualan
+            ]);
 
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to process order: ' . $e->getMessage()
-            ], 500);
+            // Simpan detail order
+            $orderDetail = new OrderDetails();
+            $orderDetail->order_id = $order->id;
+            $orderDetail->product_id = $item['productId'];
+            $orderDetail->qty = $item['qty'];
+            $orderDetail->order_price = $item['price'];
+            $orderDetail->order_subtotal = $item['price'] * $item['qty'];
+            $orderDetail->save();
         }
+
+        DB::commit();
+
+        Alert::success('Success Title', 'Success Message');
+        return redirect()->with('success', 'Order berhasil diproses');
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        Alert::error('Error Title', 'Error Message');
+        return back()->with('error', 'Gagal memproses order: ' . $e->getMessage());
     }
+}
+
 
     public function update(Request $request, string $id)
     {
@@ -195,8 +326,8 @@ class TransactionController extends Controller
         }
 
         $product->update($data);
-        // Alert::success('Success', 'Edit Succesfully');
-        toast('Data Changed Successfully', 'success');
+
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('product');
     }
 
@@ -208,7 +339,8 @@ class TransactionController extends Controller
         $product = Products::find($id);
         File::delete(public_path('storage/' . $product->product_photo));
         $product->delete();
-        toast('Data Deleted Successfully', 'success');
+        Alert::success('Success Title', 'Success Message');
+
         return redirect()->to('product');
     }
 

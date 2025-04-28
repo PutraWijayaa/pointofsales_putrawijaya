@@ -1,5 +1,5 @@
 @extends('layouts.main')
-@section('title', 'Data User')
+@section('title', 'Role Access')
 
 @section('content')
 <section class="section">
@@ -14,7 +14,7 @@
                             <a href="{{ route('roles.create') }}" class="btn btn-dark"><span class="bi bi-plus"></span>
                                 Add Data</a>
                         </div>
-                        <table class="table table-bordered">
+                        <table class="table datatable table-hover">
                             <thead>
                                 <tr>
                                     <th>No</th>

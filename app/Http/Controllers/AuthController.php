@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class AuthController extends Controller
 {
@@ -27,6 +28,8 @@ class AuthController extends Controller
             $user = Auth::user();
 
             $request->session()->regenerate();
+            Alert::success('Berhasil Login', 'Selamat datang, ' . $user->name . '!');
+
 
             // Redirect berdasarkan role
             $roles = $user->roles()->pluck('name')->toArray();
@@ -39,19 +42,22 @@ class AuthController extends Controller
                 return redirect()->route('kasir.dashboard');
             }
 
+            Alert::success('Success Title', 'Success Message');
             return redirect()->intended('login');
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ]);
+        Alert::error('Gagal Login', 'Email atau password salah.');
+        return back();
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        Alert::success('Berhasil Logout', 'Anda telah berhasil logout.');
         return redirect('/');
     }
 }

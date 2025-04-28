@@ -6,30 +6,51 @@
     <title>Laporan Penjualan Mingguan - Cetak</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Times New Roman', Times, serif;
             line-height: 1.6;
             color: #333;
             margin: 0;
             padding: 20px;
         }
-        .header {
+        .letterhead {
             text-align: center;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #000;
         }
         .company-name {
             font-size: 22px;
             font-weight: bold;
             margin-bottom: 5px;
         }
+        .company-info {
+            font-size: 12px;
+            color: #333;
+        }
+        .document-reference {
+            text-align: right;
+            margin: 15px 0 25px;
+        }
+        .document-reference table {
+            border: none;
+            width: auto;
+            margin-left: auto;
+        }
+        .document-reference td {
+            border: none;
+            padding: 2px 5px;
+        }
         .report-title {
+            text-align: center;
             font-size: 18px;
-            margin-bottom: 5px;
+            font-weight: bold;
+            margin-top: 25px;
+            text-decoration: underline;
         }
         .report-period {
+            text-align: center;
             font-size: 14px;
-            color: #666;
+            margin-bottom: 25px;
         }
         .summary-cards {
             display: flex;
@@ -58,7 +79,7 @@
             margin-bottom: 20px;
         }
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #000;
             padding: 8px;
             text-align: left;
         }
@@ -73,11 +94,34 @@
             font-weight: bold;
             margin: 20px 0 10px 0;
         }
-        .footer {
+        .intro-text {
+            margin-bottom: 20px;
+        }
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+        .signature-box {
+            width: 45%;
+        }
+        .right-aligned {
+            text-align: right;
+        }
+        .signature-name {
+            margin-top: 50px;
+            font-weight: bold;
+        }
+        .conclusion-text {
             margin-top: 30px;
+        }
+        .footer {
+            margin-top: 50px;
             text-align: center;
             color: #666;
             font-size: 12px;
+            border-top: 1px solid #000;
+            padding-top: 10px;
         }
         .no-data {
             text-align: center;
@@ -100,14 +144,42 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="company-name">POS Meet</div>
-        <div class="report-title">Laporan Penjualan Mingguan</div>
-        <div class="report-period">{{ date('d M Y', strtotime($weekStart)) }} - {{ date('d M Y', strtotime($weekEnd)) }}</div>
-        <div>Laporan Dibuat: {{ date('d M Y H:i') }}</div>
+    <div class="letterhead">
+        <div class="company-name">PPKD JAKARTA PUSAT</div>
+        <div class="company-info">
+            Jl. Teknologi Digital No. 123, Jakarta Selatan 12940<br>
+            Telp: (021) 555-7890 | Email: info@posmeet.co.id | www.posmeet.co.id
+        </div>
     </div>
 
-    <div class="summary-cards">
+    <div class="document-reference">
+        <table>
+            <tr>
+                <td>Nomor</td>
+                <td>: LPM/{{ date('Y/m/d', strtotime($weekStart)) }}</td>
+            </tr>
+            <tr>
+                <td>Tanggal</td>
+                <td>: {{ date('d F Y') }}</td>
+            </tr>
+            <tr>
+                <td>Perihal</td>
+                <td>: Laporan Penjualan Mingguan</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="report-title">LAPORAN PENJUALAN MINGGUAN</div>
+    <div class="report-period">
+        Periode: {{ date('d F Y', strtotime($weekStart)) }} - {{ date('d F Y', strtotime($weekEnd)) }}
+    </div>
+
+    <div class="intro-text">
+        <p>Dengan hormat,</p>
+        <p>Bersama ini kami sampaikan laporan penjualan mingguan untuk periode {{ date('d F Y', strtotime($weekStart)) }} sampai dengan {{ date('d F Y', strtotime($weekEnd)) }} dengan rincian sebagai berikut:</p>
+    </div>
+
+    <!-- <div class="summary-cards">
         <div class="card">
             <div class="card-title">Total Penjualan</div>
             <div class="card-value">Rp {{ number_format($totalSales, 0, ',', '.') }}</div>
@@ -120,9 +192,9 @@
             <div class="card-title">Item Terjual</div>
             <div class="card-value">{{ $totalItems }}</div>
         </div>
-    </div>
+    </div> -->
 
-    <div class="section-title">Detail Penjualan Harian</div>
+    <div class="section-title">I. DETAIL PENJUALAN HARIAN</div>
     <table>
         <thead>
             <tr>
@@ -153,7 +225,7 @@
         </tfoot>
     </table>
 
-    <div class="section-title">Produk Terlaris</div>
+    <!-- <div class="section-title">II. PRODUK TERLARIS</div>
     <table>
         <thead>
             <tr>
@@ -179,12 +251,28 @@
             </tr>
             @endforelse
         </tbody>
-    </table>
+    </table> -->
 
-    <div class="footer">
-        © {{ date('Y') }} POS Meet. All rights reserved.<br>
-        Laporan ini bersifat rahasia dan hanya untuk penggunaan internal.
+    <div class="conclusion-text">
+        <p>Demikian laporan penjualan mingguan ini kami sampaikan. Semoga informasi ini dapat membantu dalam evaluasi kinerja penjualan dan pengambilan keputusan strategis perusahaan.</p>
     </div>
+
+    <div class="signature-section">
+        <div class="signature-box"></div>
+        <div class="signature-box right-aligned">
+            <p>Jakarta, {{ date('d F Y') }}</p>
+            <p>Hormat kami,</p>
+            <div class="signature-name">
+                <p>( Nama Manajer Penjualan )</p>
+                <p>Manajer Penjualan</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="footer">
+        © {{ date('Y') }} PPKD JAKARTA PUSAT. Hak Cipta Dilindungi.<br>
+        Laporan ini bersifat rahasia dan hanya untuk penggunaan internal.
+    </div> -->
 
     <div class="no-print" style="margin-top: 20px; text-align: center;">
         <button onclick="window.print();" style="padding: 8px 16px; cursor: pointer;">Cetak Laporan</button>

@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Categories;
 use App\Models\Products;
+use App\Models\StockHistory;
 // use Illuminate\Http\Request;
 // use Illuminate\Support\Facedes\File;
-
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Resource;
@@ -56,9 +55,7 @@ class ProductController extends Controller
             'product_name' => $request->product_name,
             'product_price' => $request->product_price,
             'product_description' => $request->product_description,
-            'qty_awal' => $request->qty_awal,
-            'qty_keluar' => $request->qty_keluar,
-            'qty_akhir' => $request->qty_akhir,
+            'stock' => $request->stock,
             'is_active' => $request->is_active,
         ];
 
@@ -69,7 +66,7 @@ class ProductController extends Controller
 
         Products::create($data);
 
-        alert()->success('Create Success', 'Successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('product');
     }
 
@@ -80,9 +77,7 @@ class ProductController extends Controller
             'product_name' => $request->product_name,
             'product_price' => $request->product_price,
             'product_description' => $request->product_description,
-            'qty_awal' => $request->qty_awal,
-            'qty_keluar' => $request->qty_keluar,
-            'qty_akhir' => $request->qty_akhir,
+            'stock' => $request->stock,
             'is_active' => $request->is_active,
         ];
 
@@ -106,7 +101,8 @@ class ProductController extends Controller
         // Alert::alert('Success', 'Success', 'Type');
         // toast('Your Post as been submited!', 'success');
         // toast('Post Updated', 'success', 'top-right')->hideCloseButton();
-        alert()->success('Update Success', 'Successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
+
 
         return redirect()->to('product');
     }
@@ -120,32 +116,40 @@ class ProductController extends Controller
 
         $product->delete();
 
-        // alert()->success('Delete Success', 'Successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('product');
     }
 
     public function stockProducts()
     {
-        return view('stock.index');
+        $products = Products::with('category')->get();
+        return view('stock.index', compact('products'));
     }
 
-    public function caculate_stok($arr)
+    public function addStock(Request $request)
     {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
-        $results = DB::table('products as a')
-            ->leftJoin(DB::raw('(SELECT SUM(qty) as totalqty, product_id FROM orders_details GROUP BY product_id) b'), 'a.id', '=', 'b.product_id')
-            ->select('a.id', 'a.qty_awal', DB::raw('IFNULL(b.totalqty, 0) as totalqty'))
-            ->whereIn('a.id', $arr)
-            ->get();
+        //  data produk
+        $product = Products::findOrFail($request->product_id);
 
-        // 2. Update per baris
-        foreach ($results as $row) {
-            DB::table('products')
-                ->where('id', $row->id)
-                ->update([
-                    'qty_keluar' => $row->totalqty,
-                    'qty_akhir'  => $row->qty_awal - $row->totalqty,
-                ]);
-        }
+        //  riwayat stok
+        StockHistory::create([
+            'product_id' => $product->id,
+            'stock_change' => $request->quantity,
+            'transaction_type' => 'restock',
+        ]);
+
+        // Tambah stok produk
+        $product->stock += $request->quantity;
+        $product->save();
+
+        Alert::success('Success Title', 'Success Message');
+        return redirect()->back();
     }
+
+
 }

@@ -1,6 +1,5 @@
 {{-- Monthly Sales Report --}}
 @extends('layouts.main')
-@section('title', 'Monthly Sales Report')
 @section('content')
 <section>
     <div class="row">
@@ -72,7 +71,7 @@
                     </div>
 
                     <h5 class="card-title mt-4">Weekly Breakdown</h5>
-                    <table class="table table-bordered table-striped">
+                    <table class="table datatable table-hover table-striped">
                         <thead class="table-dark" align="center">
                             <tr>
                                 <th>Week</th>
@@ -106,8 +105,8 @@
             <div class="card mt-3">
                 <div class="card-body">
                     <h5 class="card-title">Top 10 Selling Products</h5>
-                    <table class="table table-bordered table-striped">
-                        <thead class="table-dark" align="center">
+                    <table class="table datatable table-hover table-striped">
+                        <thead>
                             <tr>
                                 <th>Rank</th>
                                 <th>Product</th>
@@ -140,8 +139,8 @@
             <div class="card mt-3">
                 <div class="card-body">
                     <h5 class="card-title">Sales by Category</h5>
-                    <table class="table table-bordered table-striped">
-                        <thead class="table-dark" align="center">
+                    <table class="table datatable table-hover table-striped">
+                        <thead>
                             <tr>
                                 <th>Category</th>
                                 <th>Products Sold</th>

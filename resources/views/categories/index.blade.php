@@ -14,7 +14,7 @@
                                 <a href="{{ route('categories.create') }}" class="btn btn-dark"><span
                                         class="bi bi-plus"></span> Add Data</a>
                             </div>
-                            <table class="table table-bordered">
+                            <table class="table datatable table-hover">
                                 <thead>
                                     <tr>
                                         <th>No</th>

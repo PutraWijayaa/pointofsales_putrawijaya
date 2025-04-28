@@ -1,89 +1,57 @@
 @extends('layouts.main')
-@section('title', 'Laporan Stok')
+
 @section('content')
-    <section class="section">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card top-selling overflow-auto effectup">
-                    <div class="card-body pb-0">
-                        <h5 class="card-title">Filters</h5>
-                        <form action="/stock" method="post">
-                            @csrf
-                            <div class="row mb-4">
-                                <div class="col-3">
-                                    <label for="datefrom">Date From</label>
-                                    <input type="date" class="form-control" value="{{ $datefrom }}" name="datefrom"
-                                        id="datefrom">
-                                </div>
-                                <div class="col-3">
-                                    <label for="datefrom">Date To</label>
-                                    <input type="date" class="form-control" value="{{ $dateto }}" name="dateto"
-                                        id="dateto">
-                                </div>
-                                <div class="col-2">
-                                    <br>
-                                    <button type="submit" class="btn btn-primary" id="submitreport" name="submitreport"> <i
-                                            class="bi bi-search"></i> Search</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-12">
-                <div class="card effectup">
-                    <div class="card-body">
-                        <h5 class="card-title"> {{ $title ?? '' }}</h5>
-                        <div class="mt-4 mb-3">
-                            <div class="mb-3" align="right">
-                            </div>
-                            <table class="table table-bordered table-striped datatablebutton" style="font-size: 14px;">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Product</th>
-                                        <th>Stok Awal</th>
-                                        <th>Qty Jual</th>
-                                        <th>Stok Akhir</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+<div class="pagetitle">
+    <h1>Laporan Stok Produk</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Laporan Stok</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
 
-                                    @php $no=1 @endphp
-                                    @if (is_iterable($data))
-                                        @forelse($data as $rowcat)
-                                            <tr>
-                                                <td class="text-center">{{ $no++ }}</td>
-                                                <td>{{ $rowcat->product_name }}</td>
-                                                <td>{{ $rowcat->qty_awal }}</td>
-                                                <td>{{ $rowcat->totalqty }}</td>
-                                                <td>{{ $rowcat->qty_awal - $rowcat->totalqty }}</td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        @endforelse
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body pt-4">
+                    <h5 class="card-title">Data Stok Produk</h5>
+
+                    <table class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Produk</th>
+                                <th>Harga</th>
+                                <th>Stok</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($products as $index => $product)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $product->product_name }}</td>
+                                <td>Rp {{ number_format($product->product_price, 2, ',', '.') }}</td>
+                                <td>{{ $product->stock }}</td>
+                                <td>
+                                    @if ($product->stock == 0)
+                                        <span class="badge bg-danger">Habis</span>
+                                    @elseif ($product->stock <= 5)
+                                        <span class="badge bg-warning text-dark">Hampir Habis</span>
                                     @else
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
+                                        <span class="badge bg-success">Tersedia</span>
                                     @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection

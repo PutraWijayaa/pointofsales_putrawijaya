@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\StockHistoryController;
 use App\Models\Orders;
 use App\Models\OrderDetails;
-use App\Models\Product;
+use App\Models\Products;
+use App\Models\StockHistory;
 use App\Models\Categories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,9 +21,15 @@ class ReportController extends Controller
         $selectedDate = $request->date ?? date('Y-m-d');
 
         // Get orders for the selected date
-        $orders = Orders::whereDate('order_date', $selectedDate)
-            ->with('OrderDetails.product')
-            ->get();
+        $orders = Orders::with(['orderDetails' => function($query) {
+            $query->select('id', 'order_id', 'product_id', 'qty', 'order_price', 'order_subtotal');
+        }])
+        ->with(['orderDetails.product' => function($query) {
+            $query->select('id', 'product_name');
+        }])
+        ->whereDate('order_date', $selectedDate)
+        ->orderBy('created_at')
+        ->get();
 
         // Calculate total sales
         $totalSales = $orders->sum('order_amount');
@@ -95,62 +104,136 @@ class ReportController extends Controller
     }
 
     // Weekly Report
-    // Weekly Report
+    // public function weeklyReport(Request $request)
+    // {
+    //     $selectedWeek = $request->input('week', date('Y') . '-' . str_pad(date('W'), 2, '0', STR_PAD_LEFT));
+    //     [$year, $week] = explode('-', $selectedWeek);
+
+    //     if (!is_numeric($year) || !is_numeric($week)) {
+    //         return back()->with('error', 'Format minggu tidak valid. Contoh: 2025-12');
+    //     }
+
+    //     $weekStart = Carbon::now()->setISODate((int)$year, (int)$week)->startOfWeek()->format('Y-m-d');
+    //     $weekEnd = Carbon::now()->setISODate((int)$year, (int)$week)->endOfWeek()->format('Y-m-d');
+
+    //     $dailySales = DB::table('orders')
+    //         ->select(
+    //             DB::raw('DATE(order_date) as date'),
+    //             DB::raw('COUNT(*) as order_count'),
+    //             DB::raw('SUM(order_amount) as total_sales')
+    //         )
+    //         ->whereBetween('order_date', [$weekStart, $weekEnd])
+    //         ->groupBy(DB::raw('DATE(order_date)'))
+    //         ->orderBy('date')
+    //         ->get();
+
+    //     $totalSales = $dailySales->sum('total_sales') ?? 0;
+    //     $totalOrders = $dailySales->sum('order_count') ?? 0;
+
+    //     $totalItems = DB::table('order_details')
+    //         ->join('orders', 'order_details.order_id', '=', 'orders.id')
+    //         ->whereBetween('orders.order_date', [$weekStart, $weekEnd])
+    //         ->sum('order_details.qty') ?? 0;
+
+    //     $topProducts = DB::table('order_details')
+    //         ->join('orders', 'order_details.order_id', '=', 'orders.id')
+    //         ->join('products', 'order_details.product_id', '=', 'products.id')
+    //         ->join('categories', 'products.category_id', '=', 'categories.id')
+    //         ->select(
+    //             'products.id',
+    //             'products.product_name',
+    //             'categories.category_name',
+    //             DB::raw('SUM(order_details.qty) as total_qty'),
+    //             DB::raw('SUM(order_details.order_subtotal) as total_amount')
+    //         )
+    //         ->whereBetween('orders.order_date', [$weekStart, $weekEnd])
+    //         ->groupBy('products.id', 'products.product_name', 'categories.category_name')
+    //         ->orderByDesc('total_qty')
+    //         ->limit(10)
+    //         ->get();
+
+    //     $availableWeeks = DB::table('orders')
+    //         ->select(
+    //             DB::raw('YEAR(order_date) as year'),
+    //             DB::raw('WEEK(order_date, 1) as week_number'),
+    //             DB::raw("CONCAT(YEAR(order_date), '-', LPAD(WEEK(order_date, 1), 2, '0')) as year_week"),
+    //             DB::raw('MIN(order_date) as start_date'),
+    //             DB::raw('MAX(order_date) as end_date'),
+    //             DB::raw('COUNT(*) as order_count'),
+    //             DB::raw('SUM(order_amount) as total_sales')
+    //         )
+    //         ->groupBy('year', 'week_number', 'year_week')
+    //         ->orderByDesc('year')
+    //         ->orderByDesc('week_number')
+    //         ->get();
+
+    //     return view('reports.weekly', compact(
+    //         'dailySales',
+    //         'weekStart',
+    //         'weekEnd',
+    //         'totalSales',
+    //         'totalOrders',
+    //         'totalItems',
+    //         'topProducts',
+    //         'selectedWeek',
+    //         'availableWeeks'
+    //     ));
+    // }
+
     public function weeklyReport(Request $request)
     {
-        // Default to current week if not selected
-        $selectedWeek = $request->week ?? date('Y-W');
+        $selectedWeek = str_replace('W', '', $request->input('week', date('Y') . '-' . date('W')));
 
-        // Split year and week from YYYY-WW format
+        if (!preg_match('/^\d{4}-\d{2}$/', $selectedWeek)) {
+            $selectedWeek = date('Y') . '-' . date('W');
+        }
+
         [$year, $week] = explode('-', $selectedWeek);
 
-        // Get start and end dates of the week based on ISO (Monday - Sunday)
-        $weekStart = Carbon::now()->setISODate($year, $week)->startOfWeek()->format('Y-m-d');
-        $weekEnd = Carbon::now()->setISODate($year, $week)->endOfWeek()->format('Y-m-d');
+        $weekStart = Carbon::now()->setISODate($year, $week)->startOfWeek()->toDateString();
+        $weekEnd = Carbon::now()->setISODate($year, $week)->endOfWeek()->toDateString();
 
-        // Daily sales breakdown
-        $dailySales = DB::table('orders')
-            ->select(
+        $dailySales = Orders::select(
                 DB::raw('DATE(order_date) as date'),
                 DB::raw('COUNT(*) as order_count'),
                 DB::raw('SUM(order_amount) as total_sales')
             )
             ->whereBetween('order_date', [$weekStart, $weekEnd])
-            ->groupBy(DB::raw('DATE(order_date)'))
+            ->groupBy('date')
             ->orderBy('date')
             ->get();
 
-        // Calculate total sales and order count
         $totalSales = $dailySales->sum('total_sales') ?? 0;
         $totalOrders = $dailySales->sum('order_count') ?? 0;
 
-        // Calculate total items sold this week
-        $totalItems = DB::table('order_details')
-            ->join('orders', 'order_details.order_id', '=', 'orders.id')
-            ->whereBetween('orders.order_date', [$weekStart, $weekEnd])
-            ->sum('order_details.qty') ?? 0;
+        $totalItems = OrderDetails::whereHas('order', function($query) use ($weekStart, $weekEnd) {
+                $query->whereBetween('order_date', [$weekStart, $weekEnd]);
+            })
+            ->sum('qty') ?? 0;
 
-        // Get top selling products this week
-        $topProducts = DB::table('order_details')
-            ->join('orders', 'order_details.order_id', '=', 'orders.id')
-            ->join('products', 'order_details.product_id', '=', 'products.id')
-            ->join('categories', 'products.category_id', '=', 'categories.id')
-            ->select(
-                'products.id',
-                'products.product_name',
-                'categories.category_name',
-                DB::raw('SUM(order_details.qty) as total_qty'),
-                DB::raw('SUM(order_details.order_subtotal) as total_amount')
-            )
-            ->whereBetween('orders.order_date', [$weekStart, $weekEnd])
-            ->groupBy('products.id', 'products.product_name', 'categories.category_name')
-            ->orderByDesc('total_qty')
-            ->limit(10)
-            ->get();
+        $topProducts = OrderDetails::with(['product.category', 'order'])
+        ->select(
+            'product_id',
+            DB::raw('SUM(qty) as total_qty'),
+            DB::raw('SUM(order_subtotal) as total_amount')
+        )
+        ->whereHas('order', function($query) use ($weekStart, $weekEnd) {
+            $query->whereBetween('order_date', [$weekStart, $weekEnd]);
+        })
+        ->groupBy('product_id')
+        ->orderByDesc('total_qty')
+        ->limit(10)
+        ->get()
+        ->map(function($item) {
+            return (object)[
+                'product_name' => $item->product->product_name,
+                'category_name' => $item->product->category->category_name,
+                'total_qty' => $item->total_qty,
+                'total_amount' => $item->total_amount
+            ];
+        });
 
-        // Get available weeks for selection
-        $availableWeeks = DB::table('orders')
-            ->select(
+        $availableWeeks = Orders::select(
                 DB::raw('YEAR(order_date) as year'),
                 DB::raw('WEEK(order_date, 1) as week_number'),
                 DB::raw("CONCAT(YEAR(order_date), '-', LPAD(WEEK(order_date, 1), 2, '0')) as year_week"),
@@ -244,56 +327,41 @@ class ReportController extends Controller
     // Monthly Report
     public function monthlyReport(Request $request)
     {
-        $selectedMonth = $request->month ?? date('Y-m');
-        list($year, $month) = explode('-', $selectedMonth);
+        // Ambil bulan yang dipilih atau bulan saat ini
+        $selectedMonth = $request->input('month', date('Y-m'));
+        $startDate = Carbon::parse($selectedMonth)->startOfMonth();
+        $endDate = Carbon::parse($selectedMonth)->endOfMonth();
 
-        $monthStart = Carbon::createFromDate($year, $month, 1)->format('Y-m-d');
-        $monthEnd = Carbon::createFromDate($year, $month, 1)->endOfMonth()->format('Y-m-d');
-
-        // Get daily breakdown for the month
-        $dailySales = DB::table('Orders')
+        // Data penjualan harian
+        $dailySales = DB::table('orders')
             ->select(
-                DB::raw('WEEK(order_date, 1) AS week_number'),
-                DB::raw('MIN(order_date) AS start_date'),
-                DB::raw('MAX(order_date) AS end_date'),
-                DB::raw("CONCAT(YEAR(order_date), '-', WEEK(order_date, 1)) AS year_week"),
-                DB::raw('COUNT(*) AS order_count'),
-                DB::raw('SUM(order_amount) AS total_sales')
+                DB::raw('DATE(order_date) as date'),
+                DB::raw('SUM(order_amount) as total_sales'),
+                DB::raw('COUNT(*) as order_count')
             )
-            ->whereYear('order_date', 2025)
-            ->whereMonth('order_date', 4)
-            ->groupBy(DB::raw('WEEK(order_date, 1)'), DB::raw("CONCAT(YEAR(order_date), '-', WEEK(order_date, 1))"))
+            ->whereBetween('order_date', [$startDate, $endDate])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Data penjualan mingguan
+        $weeklySales = DB::table('orders')
+            ->select(
+                DB::raw('WEEK(order_date, 1) as week_number'),
+                DB::raw('CONCAT(YEAR(order_date), "-W", LPAD(WEEK(order_date, 1), 2, "0")) as year_week'),
+                DB::raw('MIN(DATE(order_date)) as start_date'),
+                DB::raw('MAX(DATE(order_date)) as end_date'),
+                DB::raw('SUM(order_amount) as total_sales'),
+                DB::raw('COUNT(*) as order_count')
+            )
+            ->whereBetween('order_date', [$startDate, $endDate])
+            ->groupBy('week_number', 'year_week')
             ->orderBy('week_number')
             ->get();
 
-        // Calculate totals
-        $totalSales = $dailySales->sum('total_sales');
-        $totalOrders = $dailySales->sum('order_count');
-
-        // Get total items sold
-        $totalItems = DB::table('order_details')
-            ->join('Orders', 'order_details.order_id', '=', 'Orders.id')
-            ->whereYear('Orders.order_date', $year)
-            ->whereMonth('Orders.order_date', $month)
-            ->sum('qty');
-
-        $weeklySales = DB::select("
-        SELECT
-            WEEK(order_date, 1) AS week_number,
-            MIN(order_date) AS start_date,
-            MAX(order_date) AS end_date,
-            CONCAT(YEAR(order_date), '-', WEEK(order_date, 1)) AS year_week,
-            COUNT(*) AS order_count,
-            SUM(order_amount) AS total_sales
-        FROM Orders
-        WHERE YEAR(order_date) = ? AND MONTH(order_date) = ?
-        GROUP BY WEEK(order_date, 1), year_week
-        ORDER BY week_number;
-    ", [$year, $month]);
-
-        // Get top selling products for the month
+        // Produk terlaris
         $topProducts = DB::table('order_details')
-            ->join('Orders', 'order_details.order_id', '=', 'Orders.id')
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
             ->join('products', 'order_details.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->select(
@@ -303,16 +371,15 @@ class ReportController extends Controller
                 DB::raw('SUM(order_details.qty) as total_qty'),
                 DB::raw('SUM(order_details.order_subtotal) as total_amount')
             )
-            ->whereYear('Orders.order_date', $year)
-            ->whereMonth('Orders.order_date', $month)
+            ->whereBetween('orders.order_date', [$startDate, $endDate])
             ->groupBy('products.id', 'products.product_name', 'categories.category_name')
-            ->orderBy('total_qty', 'desc')
+            ->orderByDesc('total_amount')
             ->limit(10)
             ->get();
 
-        // Get sales by category
+        // Penjualan per kategori
         $categorySales = DB::table('order_details')
-            ->join('orders', 'order_details.order_id', '=', 'Orders.id')
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
             ->join('products', 'order_details.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->select(
@@ -322,21 +389,30 @@ class ReportController extends Controller
                 DB::raw('SUM(order_details.qty) as total_qty'),
                 DB::raw('SUM(order_details.order_subtotal) as total_amount')
             )
-            ->whereYear('Orders.order_date', $year)
-            ->whereMonth('Orders.order_date', $month)
+            ->whereBetween('orders.order_date', [$startDate, $endDate])
             ->groupBy('categories.id', 'categories.category_name')
-            ->orderBy('total_amount', 'desc')
+            ->orderByDesc('total_amount')
             ->get();
 
+        // Total keseluruhan
+        $totalSales = $dailySales->sum('total_sales');
+        $totalOrders = $dailySales->sum('order_count');
+        $totalItems = DB::table('order_details')
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->whereBetween('orders.order_date', [$startDate, $endDate])
+            ->sum('qty');
+
         return view('reports.monthly', compact(
+            'selectedMonth',
             'dailySales',
-            'totalSales',
-            'totalOrders',
-            'totalItems',
             'weeklySales',
             'topProducts',
             'categorySales',
-            'selectedMonth'
+            'totalSales',
+            'totalOrders',
+            'totalItems',
+            'startDate',
+            'endDate'
         ));
     }
 
@@ -606,41 +682,45 @@ class ReportController extends Controller
 
     public function laporan_stokbarang()
     {
-        //
-        $data['data'] = 'data';
-        $data['datefrom'] = date('Y-m-d');
-        $data['dateto'] = date('Y-m-d');
-        $data['title'] = 'Laporan Stok';
-        return view('stock.index', $data);
+        $products = Products::orderBy('product_name')->get();
+        return view('stock.index', compact('products'));
     }
-    public function laporan_stokbarang_load(Request $request)
+
+    public function stockHistory()
     {
+        $stockHistories = StockHistory::with('product')->orderByDesc('created_at')->get();
 
-        $subquery = DB::table('order_details as a')
-            ->selectRaw('
-        SUM(qty) as totalqty,
-        COUNT(a.id) as totalsell,
-        SUM(order_subtotal) as totalrevenue,
-        product_id
-         ')
-            ->leftJoin('orders as b', 'a.order_id', '=', 'b.id')
-            ->whereDate('b.order_date', '>=', $request->datefrom)
-            ->whereDate('b.order_date', '<=', $request->dateto)
-            ->groupBy('product_id');
-
-        $data['data'] = DB::table('products as a')
-            ->leftJoinSub($subquery, 'b', 'a.id', '=', 'b.product_id')
-            ->selectRaw('
-        a.*,
-        IFNULL(b.totalqty, 0) as totalqty,
-        IFNULL(b.totalsell, 0) as totalsell,
-        IFNULL(b.totalrevenue, 0) as totalrevenue
-    ')->get();
-        // return $data['data'];
-        $data['title'] = 'Laporan Stok';
-        $data['datefrom'] = $request->datefrom;
-        $data['dateto'] = $request->dateto;
-        toast('Data Loaded Successfully', 'success');
-        return view('stock.index', $data);
+        return view('reports.stock_history', compact('stockHistories'));
     }
+
+    public function stockReport()
+    {
+        $products = Products::all();
+
+        return view('reports.stock', compact('products'));
+    }
+
+    public function print()
+    {
+        //  data produk
+        $products = Products::all();
+
+        //  view laporan stok produk untuk cetak
+        return view('reports.print.report_stock_print', compact('products'));
+    }
+
+    public function printHistory()
+    {
+        $stockHistories = StockHistory::with('product')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+            $stockHistories = StockHistory::with('product')->get();
+
+        return Pdf::loadView('reports.print.stockHis', [
+            'stockHistories' => $stockHistories
+        ])->stream('laporan-stok.pdf');
+
+    }
+
 }

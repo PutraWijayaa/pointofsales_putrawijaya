@@ -35,4 +35,8 @@ class User extends Authenticatable
     {
         return $this->roles()->whereIn('name', $roleNames)->exists();
     }
+    public function stockHistories()
+    {
+        return $this->hasMany(StockHistory::class);
+    }
 }

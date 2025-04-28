@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categories;
-
+use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
@@ -42,7 +42,7 @@ class CategoriesController extends Controller
             'category_name' => $request->category_name
         ]);
 
-        alert()->success('Create Success', 'Successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('categories');
     }
 
@@ -57,7 +57,7 @@ class CategoriesController extends Controller
         // $category->category_name = $request->category_name;
         // $category->save();
 
-        alert()->success('Update Success', 'Successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('categories');
     }
 
@@ -69,7 +69,7 @@ class CategoriesController extends Controller
         // $category = Categories::find($id);
         // $category->delete();
 
-        // alert()->success('Delete Success', 'Successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('categories');
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\UserRole;
-
+use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -66,7 +66,7 @@ class UsersController extends Controller
             'role_id' => $request->level_id,
         ]);
 
-        alert()->success('Create Success', 'User created successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->route('users.index');
     }
 
@@ -98,7 +98,7 @@ class UsersController extends Controller
         ['user_id' => $user->id],
         ['role_id' => $request->level_id]
     );
-
+    Alert::success('Success Title', 'Success Message');
     return redirect()->route('users.index')->with('success', 'User updated successfully!');
 }
 
@@ -113,7 +113,7 @@ class UsersController extends Controller
     // Baru hapus user
     $user->delete();
 
-    alert()->success('Success', 'User deleted successfully');
+    Alert::success('Success Title', 'Success Message');
     return redirect()->route('users.index');
 }
 

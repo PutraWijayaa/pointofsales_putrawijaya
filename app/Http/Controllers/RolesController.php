@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 class RolesController extends Controller
 {
@@ -39,7 +41,7 @@ class RolesController extends Controller
             'is_active' => $request->is_active ?? 1, // Default aktif jika tidak diisi
         ]);
 
-        alert()->success('Create Success', 'Successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('roles');
     }
 
@@ -50,13 +52,14 @@ class RolesController extends Controller
             'is_active' => $request->is_active ?? 1,
         ]);
 
-        alert()->success('Update Success', 'Successfully')->toToast();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('roles');
     }
 
     public function destroy(string $id)
     {
         Role::where('id', $id)->delete();
+        Alert::success('Success Title', 'Success Message');
         return redirect()->to('roles');
     }
 }

@@ -1,8 +1,3 @@
-**Updated View Using Nice Admin Template**
-
-To update your view using the Nice Admin template, you will need to adjust the HTML structure and classes to match the Nice Admin design. Below is a revised version of your code that incorporates the Nice Admin template styles.
-
-```blade
 @extends('layouts.main')
 
 @section('content')
@@ -15,19 +10,12 @@ To update your view using the Nice Admin template, you will need to adjust the H
             <form action="{{ route('reports.weekly') }}" method="GET" class="d-inline-block">
                 <div class="input-group">
                     <label class="input-group-text" for="week">Select Week</label>
-                    <input
-                        type="week"
-                        id="week"
-                        name="week"
-                        value="{{ $selectedWeek }}"
-                        class="form-control"
-                        onchange="this.form.submit()"
-                    >
+                    <input type="week" id="week" name="week" value="{{ str_replace('-', '-W', $selectedWeek) }}"
+                        class="form-control" onchange="this.form.submit()">
                 </div>
             </form>
-            <a href="{{ route('reports.weekly.print', ['week' => $selectedWeek]) }}"
-               class="btn btn-secondary ms-2"
-               target="_blank">
+            <a href="{{ route('reports.weekly.print', ['week' => $selectedWeek]) }}" class="btn btn-secondary ms-2"
+                target="_blank">
                 <i class="fas fa-print"></i> Print Report
             </a>
         </div>
@@ -67,7 +55,7 @@ To update your view using the Nice Admin template, you will need to adjust the H
     <!-- Charts and Top Products -->
     <div class="row">
         <!-- Daily Sales Chart -->
-        <div class="col-lg-6 mb-4">
+        <!-- <div class="col-lg-6 mb-4">
             <div class="card shadow">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Daily Sales</h6>
@@ -76,17 +64,17 @@ To update your view using the Nice Admin template, you will need to adjust the H
                     <canvas id="dailySalesChart" width="400" height="300"></canvas>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Top Selling Products -->
-        <div class="col-lg-6 mb-4">
+        <div class="col-lg-12 mb-4">
             <div class="card shadow">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Top Selling Products</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table class="table datatable table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -121,7 +109,7 @@ To update your view using the Nice Admin template, you will need to adjust the H
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped">
+                <table class="table datatable table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -150,68 +138,4 @@ To update your view using the Nice Admin template, you will need to adjust the H
         </div>
     </div>
 </div>
-@endsection
-
-@section('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('dailySalesChart').getContext('2d');
-    const dailySalesChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [
-                @foreach($dailySales as $day)
-                    '{{ date('D', strtotime($day->date)) }}',
-                @endforeach
-            ],
-            datasets: [{
-                label: 'Sales Amount',
-                data: [
-                    @foreach($dailySales as $day)
-                        {{ $day->total_sales }},
-                    @endforeach
-                ],
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Order Count',
-                data: [
-                    @foreach($dailySales as $day)
-                        {{ $day->order_count }},
-                    @endforeach
-                ],
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                yAxisID: 'y1'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Sales Amount'
-                    }
-                },
-                y1: {
-                    beginAtZero: true,
-                    position: 'right',
-                    grid: {
-                        drawOnChartArea: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Order Count'
-                    }
-                }
-            }
-        }
-    });
-});
-</script>
 @endsection
