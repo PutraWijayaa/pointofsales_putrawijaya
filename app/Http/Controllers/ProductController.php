@@ -107,16 +107,35 @@ class ProductController extends Controller
         return redirect()->to('product');
     }
 
+    // public function destroy(string $id)
+    // {
+    //     // Products::where('id', $id)->delete();
+    //     $product = Products::find($id);
+
+    //     File::delete(public_path('storage/' . $product->product_photo));
+
+    //     $product->delete();
+
+    //     Alert::success('Success Title', 'Success Message');
+    //     return redirect()->to('product');
+    // }
+
     public function destroy(string $id)
     {
-        // Products::where('id', $id)->delete();
-        $product = Products::find($id);
+        $product = Products::findOrFail($id);
 
-        File::delete(public_path('storage/' . $product->product_photo));
+        // Hapus semua stock histories yang berhubungan dengan produk ini
+        StockHistory::where('product_id', $product->id)->delete();
 
+        // Hapus foto produk jika ada
+        if ($product->product_photo && File::exists(public_path('storage/' . $product->product_photo))) {
+            File::delete(public_path('storage/' . $product->product_photo));
+        }
+
+        // Hapus produk
         $product->delete();
 
-        Alert::success('Success Title', 'Success Message');
+        Alert::success('Berhasil', 'Produk berhasil dihapus.');
         return redirect()->to('product');
     }
 
@@ -140,7 +159,7 @@ class ProductController extends Controller
         StockHistory::create([
             'product_id' => $product->id,
             'stock_change' => $request->quantity,
-            'transaction_type' => 'restock',
+            'transaction_type' => 'stock_in',
         ]);
 
         // Tambah stok produk
@@ -152,4 +171,28 @@ class ProductController extends Controller
     }
 
 
+    public function outStock(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        //  data produk
+        $product = Products::findOrFail($request->product_id);
+
+        //  riwayat stok
+        StockHistory::create([
+            'product_id' => $product->id,
+            'stock_change' => -$request->quantity,
+            'transaction_type' => 'stock_out',
+        ]);
+
+        // Tambah stok produk
+        $product->stock -= $request->quantity;
+        $product->save();
+
+        Alert::success('Success Title', 'Success Message');
+        return redirect()->back();
+    }
 }

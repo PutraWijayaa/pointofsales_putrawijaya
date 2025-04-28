@@ -7,8 +7,8 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-     <!-- Title dan Meta Tags -->
-     <title>{{ $title ?? '' }} Point Of Sales</title>
+    <!-- Title dan Meta Tags -->
+    <title>{{ $title ?? '' }} Point Of Sales</title>
     <meta name="description" content="{{ $description ?? 'Deskripsi default aplikasi Anda' }}">
     <meta name="keywords" content="{{ $keywords ?? 'keyword1, keyword2, keyword3' }}">
     <meta name="author" content="Nama Perusahaan/Developer">
@@ -57,8 +57,6 @@
 
         @yield('content')
 
-
-
     </main><!-- End #main -->
 
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
@@ -101,131 +99,130 @@
 
     {{-- script sales --}}
     <script>
-        $('.datatablebutton').DataTable({
-            dom: 'B',
-            "bPaginate": false,
-            buttons: [
-                'copy', 'csv', 'excel', 'print'
-            ]
+    // $('.datatablebutton').DataTable({
+    //     dom: 'B',
+    //     "bPaginate": false,
+    //     buttons: [
+    //         'copy', 'csv', 'excel', 'print'
+    //     ]
+    // });
+
+    function formatRupiah(number) {
+        const formatted = number.toLocaleString("id", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         });
+        return formatted;
+    }
 
-        function formatRupiah(number) {
-            const formatted = number.toLocaleString("id", {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-            });
-            return formatted;
-        }
-
-        $('#category_id').change(function() {
-            let cat_id = $(this).val(),
-                option = `<option value="">Select One</option>`
-            $.ajax({
-                url: '/get-product/' + cat_id,
-                type: 'GET',
-                dataType: 'json',
-                success: function(resp) {
-                    // console.log("response", resp);
-                    $.each(resp.data, function(index, value) {
-                        option +=
-                            `<option
+    $('#category_id').change(function() {
+        let cat_id = $(this).val(),
+            option = `<option value="">Select One</option>`
+        $.ajax({
+            url: '/get-product/' + cat_id,
+            type: 'GET',
+            dataType: 'json',
+            success: function(resp) {
+                // console.log("response", resp);
+                $.each(resp.data, function(index, value) {
+                    option +=
+                        `<option
                                 data-img="${value.product_photo}" data-price="${value.product_price}"
                                 value ="${value.id}">${value.product_name}</option>`;
-                    });
-
-                    $('#product_id').html(option)
-                }
-            });
-        });
-
-        $(".add-row").click(function() {
-
-            let tbody = $('tbody');
-            let selectedOption = $('#product_id').find('option:selected')
-            let namaProduk = selectedOption.text();
-            let productId = selectedOption.val();
-            let photoProduct = selectedOption.data('img');
-            let productPrice = parseInt(selectedOption.data('price')) || 0;
-
-            if ($('#category_id').val() == "") {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Category Null!",
-                    confirmButtonColor: "#00000",
                 });
-                return false;
+
+                $('#product_id').html(option)
             }
-
-            if ($('#product_id').val() == "") {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Product Null!",
-                });
-                return false;
-            }
-
-            let newRow = "<tr>";
-
-            newRow +=
-                `<td class='text-center'><img src="{{ asset('storage/') }}/${photoProduct}" width="120" alt="Image Product"></td>`
-
-            newRow += `<td>${namaProduk}<input type='hidden' name='product_id[]' value='${productId}'></td>`
-
-            newRow +=
-                `<td width='110'><input type='number' name='qty[]' class='qty form-control' width='100' value='1'></td>`
-            newRow +=
-                `<td><input type='hidden' name='order_price[]' value='${productPrice}'><span class='price' data-price=${productPrice}>${formatRupiah(productPrice)}</span></td>`
-            newRow +=
-                `<td><input type='hidden' class='subtotal_input' name='order_subtotal[]' value='${productPrice}'><span class='subtotal'>${formatRupiah(productPrice)}</span></td>`
-            newRow +=
-                `<td><button type='button' class='btn btn-danger btn-sm remove' id='remove'><i class='bi bi-trash'></i></button></td>`
-            newRow += "</tr>"
-
-            tbody.append(newRow);
-
-            // calculateSubTotal();
-
-            clearAll();
-
-            $('.qty').off().on('input', function() {
-
-                let row = $(this).closest('tr');
-                let qty = parseInt($(this).val()) || 0;
-                let price = parseInt(row.find('.price').data('price')) || 0;
-                console.log(price);
-                let total = qty * price;
-
-                row.find('.subtotal').text(formatRupiah(total));
-                row.find('.subtotal_input').val(total);
-                calculateSubTotal();
-            })
-
-            // hapus product list by id
-            $('.remove').click(function(event) {
-                event.preventDefault();
-                $(this).closest('tr').remove();
-                calculateSubTotal();
-            });
         });
+    });
 
+    $(".add-row").click(function() {
 
-        function clearAll() {
-            $('#category_id').val("");
-            $('#product_id').val("");
+        let tbody = $('tbody');
+        let selectedOption = $('#product_id').find('option:selected')
+        let namaProduk = selectedOption.text();
+        let productId = selectedOption.val();
+        let photoProduct = selectedOption.data('img');
+        let productPrice = parseInt(selectedOption.data('price')) || 0;
+
+        if ($('#category_id').val() == "") {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Category Null!",
+                confirmButtonColor: "#00000",
+            });
+            return false;
         }
 
-        function calculateSubTotal() {
-            let grandTotal = 0;
-            $('.subtotal').each(function() {
-                let total = parseInt($(this).text().replace(/\./g, ''));
-                grandTotal += total;
+        if ($('#product_id').val() == "") {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Product Null!",
             });
-
-            $('.grandtotal').text(formatRupiah(grandTotal));
-            $('input[name="grandtotal"]').val(grandTotal);
+            return false;
         }
+
+        let newRow = "<tr>";
+
+        newRow +=
+            `<td class='text-center'><img src="{{ asset('storage/') }}/${photoProduct}" width="120" alt="Image Product"></td>`
+
+        newRow += `<td>${namaProduk}<input type='hidden' name='product_id[]' value='${productId}'></td>`
+
+        newRow +=
+            `<td width='110'><input type='number' name='qty[]' class='qty form-control' width='100' value='1'></td>`
+        newRow +=
+            `<td><input type='hidden' name='order_price[]' value='${productPrice}'><span class='price' data-price=${productPrice}>${formatRupiah(productPrice)}</span></td>`
+        newRow +=
+            `<td><input type='hidden' class='subtotal_input' name='order_subtotal[]' value='${productPrice}'><span class='subtotal'>${formatRupiah(productPrice)}</span></td>`
+        newRow +=
+            `<td><button type='button' class='btn btn-danger btn-sm remove' id='remove'><i class='bi bi-trash'></i></button></td>`
+        newRow += "</tr>"
+
+        tbody.append(newRow);
+
+        // calculateSubTotal();
+
+        clearAll();
+
+        $('.qty').off().on('input', function() {
+
+            let row = $(this).closest('tr');
+            let qty = parseInt($(this).val()) || 0;
+            let price = parseInt(row.find('.price').data('price')) || 0;
+            console.log(price);
+            let total = qty * price;
+
+            row.find('.subtotal').text(formatRupiah(total));
+            row.find('.subtotal_input').val(total);
+            calculateSubTotal();
+        })
+
+        // hapus product list by id
+        $('.remove').click(function(event) {
+            event.preventDefault();
+            $(this).closest('tr').remove();
+            calculateSubTotal();
+        });
+    });
+
+    function clearAll() {
+        $('#category_id').val("");
+        $('#product_id').val("");
+    }
+
+    function calculateSubTotal() {
+        let grandTotal = 0;
+        $('.subtotal').each(function() {
+            let total = parseInt($(this).text().replace(/\./g, ''));
+            grandTotal += total;
+        });
+
+        $('.grandtotal').text(formatRupiah(grandTotal));
+        $('input[name="grandtotal"]').val(grandTotal);
+    }
     </script>
 </body>
 

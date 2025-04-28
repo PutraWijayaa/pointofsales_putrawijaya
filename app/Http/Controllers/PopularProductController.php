@@ -16,7 +16,7 @@ class PopularProductController extends Controller
         ->with('product', 'product.category')
         ->groupBy('product_id')
         ->orderByDesc('total_ordered')
-        ->limit(10)
+        // ->limit(10)
         ->get();
 
         return view('admin.popular-products.index', compact('popularProducts'));

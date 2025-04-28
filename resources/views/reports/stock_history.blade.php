@@ -39,14 +39,22 @@
                                     <td>
                                         @if($history->stock_change > 0)
                                         <span class="badge bg-success">+{{ $history->stock_change }}</span>
-                                        @else
-                                        <span class="badge bg-danger">{{ $history->stock_change }}</span>
-                                        @endif
+                                        @elseif($history->stock_change < 0) <span class="badge bg-danger">
+                                            -{{ abs($history->stock_change) }}</span>
+                                            @else
+                                            <span class="badge bg-secondary">0</span>
+                                            @endif
                                     </td>
                                     <td>
-                                        <span
-                                            class="badge bg-{{ $history->transaction_type == 'restock' ? 'primary' : 'warning' }}">
-                                            {{ ucfirst($history->transaction_type) }}
+                                        <span class="badge bg-{{
+                                            match($history->transaction_type) {
+                                                'stock_in' => 'success',
+                                                'stock_out' => 'danger',
+                                                'sale' => 'warning',
+                                                default => 'secondary'
+                                                }
+                                            }}">
+                                            {{ ucfirst(str_replace('_', ' ', $history->transaction_type)) }}
                                         </span>
                                     </td>
                                     <td>{{ $history->created_at->format('d-m-Y H:i') }}</td>

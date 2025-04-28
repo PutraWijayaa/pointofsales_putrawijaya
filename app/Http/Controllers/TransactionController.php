@@ -27,7 +27,7 @@ class TransactionController extends Controller
     }
     public function create()
     {
-        $Products = Products::orderBy('id', 'desc')->get()->map(function ($res) {
+        $Products = Products::where('is_active', 1)->orderBy('id', 'desc')->get()->map(function ($res) {
             return [
                 "id" => $res->id,
                 "name" => $res->product_name,
@@ -300,8 +300,7 @@ class TransactionController extends Controller
         Alert::error('Error Title', 'Error Message');
         return back()->with('error', 'Gagal memproses order: ' . $e->getMessage());
     }
-}
-
+    }
 
     public function update(Request $request, string $id)
     {

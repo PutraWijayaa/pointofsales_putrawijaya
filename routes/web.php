@@ -64,7 +64,8 @@ Route::middleware('auth')->group(function () {
         // Manajemen Produk
         Route::resource('product', ProductController::class);
 
-        Route::post('/stock/add', [ProductController::class, 'addStock'])->name('stock.add');
+        Route::post('/stock/in', [ProductController::class, 'addStock'])->name('stock.in');
+        Route::post('/stock/out', [ProductController::class, 'outStock'])->name('stock.out');
 
         // Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');
         // Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
